@@ -11,10 +11,11 @@ class Solution:
         y_pred += 1e-7
         # 'mask' is our condition for np.where.
         mask = y_true == 1
-        # np.where outputs an array with elements containing the log values corresponding
+        # np.where outputs an array with elements containing the predicted prob values corresponding
         #   to each sample, which are calculated differently depending on whether the true
-        #       label is 1 (np.log(y_pred)) or 0 (np.log(1 - y_pred)).
-        logs_of_samples = np.where(mask, np.log(y_pred), np.log(1 - y_pred))
+        #       label is 1 (y_pred)) or 0 (1 - y_pred).
+        # The log values of said output array are then calculated with np.log.
+        logs_of_samples = np.log(np.where(mask, y_pred, 1 - y_pred))
         log_sum = np.sum(logs_of_samples)
         # return round(your_answer, 4)
         return np.round(-log_sum / np.size(y_pred), 4)
@@ -25,10 +26,11 @@ class Solution:
         # Hint: add a small epsilon (1e-7) to y_pred to avoid log(0)
         y_pred += 1e-7
         mask = y_true == 1
-        # np.where outputs an array with elements containing either the log values corresponding
-        #   to each sample where the true label is 1, or 0 otherwise.
-        logs_of_samples = np.where(mask, np.log(y_pred), 0)
-        log_sum = np.sum(logs_of_samples)
+        # y_pred[mask] returns a plain 1D NumPy array containing only the
+        #   true-class probabilities. This is done via boolean indexing.
+        #     np.log then computes the log values of each element in said
+        #       array, before they're all summed up via np.sum. 
+        log_sum = np.sum(np.log(y_pred[mask]))
         # return round(your_answer, 4)
         # y_pred.shape[0] corresponds to the no. of nested arrays (samples) in y_pred.
         return np.round(-log_sum / y_pred.shape[0], 4)
